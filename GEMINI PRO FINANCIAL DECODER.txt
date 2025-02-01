@@ -1,0 +1,219 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Function to load financial data
+def load_financial_data(file_path):
+    return pd.read_excel(file_path)
+
+# Basic analysis: Calculate financial ratios (like Profit Margin, ROI)
+def calculate_financial_ratios(df):
+    revenue = df['Revenue']
+    expenses = df['Expenses']
+    net_income = revenue - expenses
+    profit_margin = (net_income / revenue) * 100
+    
+    return {
+        'Total Revenue': revenue.sum(),
+        'Total Expenses': expenses.sum(),
+        'Net Income': net_income.sum(),
+        'Profit Margin (%)': profit_margin.mean()
+    }
+
+# Market Trend Analysis (Plotting)
+def plot_market_trends(df):
+    plt.figure(figsize=(10,6))
+    plt.plot(df['Date'], df['Revenue'], label='Revenue', color='green')
+    plt.plot(df['Date'], df['Expenses'], label='Expenses', color='red')
+    plt.xlabel('Date')
+    plt.ylabel('Amount ($)')
+    plt.title('Revenue vs Expenses over Time')
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.show()
+
+# Example Usage
+df = load_financial_data('financial_report.xlsx')
+financial_ratios = calculate_financial_ratios(df)
+print(financial_ratios)
+plot_market_trends(df)
+import yfinance as yf
+
+# Function to get historical stock data
+def get_stock_data(ticker, start_date, end_date):
+    stock_data = yf.download(ticker, start=start_date, end=end_date)
+    return stock_data
+
+# Analyzing stock performance (e.g., return on investment)
+def analyze_investment(stock_data):
+    stock_data['Daily Return'] = stock_data['Adj Close'].pct_change()
+    avg_daily_return = stock_data['Daily Return'].mean()
+    volatility = stock_data['Daily Return'].std()
+    
+    return {
+        'Average Daily Return': avg_daily_return,
+        'Volatility': volatility
+    }
+
+# Example Usage
+stock_data = get_stock_data('AAPL', '2020-01-01', '2025-01-01')
+investment_insights = analyze_investment(stock_data)
+print(investment_insights)
+from statsmodels.tsa.arima.model import ARIMA
+
+# Function to forecast financial data using ARIMA
+def forecast_financial_data(df, column, forecast_periods=12):
+    model = ARIMA(df[column], order=(5, 1, 0))  # ARIMA model (5, 1, 0) for simplicity
+    model_fit = model.fit()
+    forecast = model_fit.forecast(steps=forecast_periods)
+    
+    return forecast
+
+# Example Usage (Forecasting next 12 months of revenue)
+forecast = forecast_financial_data(df, 'Revenue', forecast_periods=12)
+print(forecast)
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
+import yfinance as yf
+
+# Load financial data
+def load_financial_data(file_path):
+    return pd.read_excel(file_path)
+
+# Calculate financial ratios
+def calculate_financial_ratios(df):
+    revenue = df['Revenue']
+    expenses = df['Expenses']
+    net_income = revenue - expenses
+    profit_margin = (net_income / revenue) * 100
+    
+    return {
+        'Total Revenue': revenue.sum(),
+        'Total Expenses': expenses.sum(),
+        'Net Income': net_income.sum(),
+        'Profit Margin (%)': profit_margin.mean()
+    }
+
+# Stock data analysis
+def get_stock_data(ticker, start_date, end_date):
+    stock_data = yf.download(ticker, start=start_date, end=end_date)
+    return stock_data
+
+# Forecasting using ARIMA
+def forecast_financial_data(df, column, forecast_periods=12):
+    model = ARIMA(df[column], order=(5, 1, 0))  # ARIMA model (5, 1, 0)
+    model_fit = model.fit()
+    forecast = model_fit.forecast(steps=forecast_periods)
+    return forecast
+
+# Streamlit interface
+st.title("Gemini Pro Financial Decoder")
+
+# Upload Financial Data File
+uploaded_file = st.file_uploader("Upload Financial Report (Excel)", type=["xlsx"])
+
+if uploaded_file is not None:
+    df = load_financial_data(uploaded_file)
+    st.write("Financial Data Overview:", df.head())
+
+    # Show financial ratios
+    financial_ratios = calculate_financial_ratios(df)
+    st.subheader("Financial Ratios")
+    st.write(financial_ratios)
+
+    # Plot market trends
+    st.subheader("Market Trends (Revenue vs Expenses)")
+    fig, ax = plt.subplots()
+    ax.plot(df['Date'], df['Revenue'], label='Revenue', color='green')
+    ax.plot(df['Date'], df['Expenses'], label='Expenses', color='red')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Amount ($)')
+    ax.set_title('Revenue vs Expenses over Time')
+    ax.legend()
+    st.pyplot(fig)
+
+    # Financial forecasting
+    st.subheader("Financial Forecasting (Revenue for next 12 months)")
+    forecast = forecast_financial_data(df, 'Revenue', forecast_periods=12)
+    st.write(forecast)
+
+    # Investment insights (example: Apple stock analysis)
+    st.subheader("Investment Insights (Apple Stock)")
+    stock_data = get_stock_data('AAPL', '2020-01-01', '2025-01-01')
+    investment_insights = stock_data['Adj Close'].pct_change().mean(), stock_data['Adj Close'].pct_change().std()
+    st.write("Average Daily Return:", investment_insights[0])
+    st.write("Volatility:", investment_insights[1])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
